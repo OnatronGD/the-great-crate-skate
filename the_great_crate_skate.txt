@@ -1,0 +1,548 @@
+(TODO: allow for chained slide -> multipush -> slide... events.)
+
+title The Great Crate Skate
+author Onatron
+homepage onatron.itch.io
+background_color #25272a
+
+again_interval 0.03
+key_repeat_interval 0.12
+
+run_rules_on_level_start
+norepeat_action
+text_color #e0b94a
+
+========
+OBJECTS
+========
+Background .
+#dbc1af
+Shadow1Main
+#a7a79e
+00000
+00.0.
+.....
+.....
+.....
+Shadow1OnTarget
+#a7a79e #9b6970
+00000
+01.1.
+.....
+.....
+.....
+Shadow1OnWallPlayer
+#c9814b
+00..0
+.0...
+.....
+.....
+.....
+
+PL
+#dda963 #c9814b #25272a #dbc1af #cf6a4f #e0b94a #b2af5c #a7a79e #9b6970
+..22.
+..522
+8888.
+..22.
+.2.2.
+PLG
+#dda963 #c9814b #25272a #dbc1af #cf6a4f #e0b94a #b2af5c #a7a79e #9b6970
+.22..
+.522.
+4888.
+..22.
+..2.2
+PR
+#dda963 #c9814b #25272a #dbc1af #cf6a4f #e0b94a #b2af5c #a7a79e #9b6970
+.22..
+225..
+.8888
+.22..
+.2.2.
+PRG
+#dda963 #c9814b #25272a #dbc1af #cf6a4f #e0b94a #b2af5c #a7a79e #9b6970
+..22.
+.225.
+.8884
+.22..
+2.2..
+
+W
+#9b6970 #e0b94a #c9814b
+00000
+21110
+21110
+22222
+00000
+WV
+#9b6970 #e0b94a #c9814b
+00010
+00010
+00010
+00010
+00010
+WH
+#9b6970 #e0b94a #c9814b
+00000
+11111
+00000
+00000
+00000
+
+WCapU
+#9b6970
+00000
+.....
+.....
+.....
+.....
+WCapR
+#9b6970
+....0
+....0
+....0
+....0
+....0
+WCapD
+#9b6970
+.....
+.....
+.....
+.....
+00000
+WCapL
+#9b6970
+0....
+0....
+0....
+0....
+0....
+
+Border
+#25272a
+
+WallFaceL
+transparent
+WallFaceR
+transparent
+InactiveWallFL
+#c9814b
+....0
+.....
+....0
+.....
+....0
+ActiveWallFL
+#c9814b #25272a
+01111
+.....
+01111
+.....
+01111
+InactiveWallFR
+#c9814b
+0....
+.....
+0....
+.....
+0....
+ActiveWallFR
+#c9814b #25272a
+11110
+.....
+11110
+.....
+11110
+
+WallGrab
+transparent
+InactiveWallG
+#cf6a4f
+0...0
+.....
+.....
+.....
+..0..
+ActiveWallG
+#cf6a4f #25272a
+1...1
+1.0.1
+1.1.1
+0.1.0
+..1..
+WallNoGrab
+transparent
+InactiveWallNG
+#cf6a4f
+.....
+.....
+0.0.0
+.....
+.....
+ActiveWallNG
+#cf6a4f #25272a
+0.0.0
+1.1.1
+11111
+1.1.1
+0.0.0
+
+WallCrate
+#c9814b
+00.00
+0...0
+..0..
+0...0
+00.00
+WallPlayer
+#dda963 #25272a
+00110
+10011
+11001
+01100
+00110
+
+Crate
+#9b6970 #c9814b #dda963
+22222
+10002
+11002
+11102
+11112
+CrateOnTarget
+#9b6970 #b2af5c
+11111
+10001
+11001
+11101
+11111
+
+(Rock
+#9b6970 #a7a79e
+.111.
+01111
+01111
+10111
+.100.)
+
+Target
+#cf6a4f
+.....
+.000.
+.0.0.
+.000.
+.....
+
+Ice
+#a7a79e
+00000
+0.0.0
+0..00
+00..0
+00000
+SlideU
+transparent
+SlideR
+transparent
+SlideD
+transparent
+SlideL
+transparent
+
+Bumper
+#cf6a4f #e0b94a #9b6970 #25272a
+.000.
+03330
+02130
+02230
+.000.
+
+Temp
+transparent
+TryFlipPlayer
+transparent
+
+=======
+LEGEND
+=======
+/ = WV
+_ = WH
+L = PL
+R = PR
+C = Crate
+T = Target
++ = WallCrate
+- = WallPlayer
+! = Ice
+X = Crate and Target and CrateOnTarget
+0 = Border
+
+A = (ActiveWallFL and )WallFaceL
+D = (ActiveWallFR and )WallFaceR
+J = A and Ice
+K = D and Ice
+O = A and Target
+P = D and Target
+
+G = (ActiveWallG and )WallGrab
+N = (ActiveWallNG and )WallNoGrab
+M = G and Ice
+H = N and Ice
+
+B = Bumper
+
+9 = WallCrate and Ice
+8 = Crate and Ice
+7 = WallPlayer and Ice
+
+
+PlayerG = PLG or PRG
+PlayerNoG = PL or PR
+Player = PlayerNoG or PlayerG
+PlayerFaceL = PL or PLG
+PlayerFaceR = PR or PRG
+Slide = SlideU or SlideR or SlideD or SlideL
+
+Wall = W or WV or WH
+Shadow1 = Shadow1Main or Shadow1OnTarget or Shadow1OnWallPlayer
+
+CanMove = Player or Crate
+
+CastsShadow1 = Wall or Crate
+CanSlide = Crate or Player
+
+Solid = Crate or Wall or ActiveWallFL or ActiveWallFR or ActiveWallG or ActiveWallNG or Border or Bumper
+SolidToMultipushables = Solid or WallCrate
+SolidToPlayers = Solid or WallPlayer
+
+BlockPushesFromPushers = Wall or ActiveWallFL or ActiveWallFR or ActiveWallG or ActiveWallNG or Border or Bumper or WallCrate
+
+Grabbable = Crate or Wall
+Draggable = Crate
+Multipushable = Crate
+Pusher = Crate
+
+=======
+SOUNDS
+=======
+sfx0 88333503 (grab)
+sfx1 47477907 (ungrab)
+
+sfx2 7930727 (target pressed)
+sfx3 90077907 (slide)
+
+sfx4 3243506 (bumper)
+
+sfx5 4951307 (flip)
+sfx6 99227107 (move)
+(sfx7 52500904 (wallgrab prevents move))
+
+(sfx6 30232507 (move crate))
+
+(sfx4 5798707 (forced ungrab))
+(sfx4 97173107)
+(sfx4 33666307)
+
+(sfx2 17325507 (forced grab)
+sfx3 3552307 (forced ungrab))
+
+================
+COLLISIONLAYERS
+================
+Background
+WallPlayer
+Ice
+Target
+Shadow1
+Wall Crate WallCrate Border Bumper
+CrateOnTarget WCapU WCapR
+InactiveWallFL InactiveWallFR ActiveWallFL ActiveWallFR WCapD WCapL
+InactiveWallG InactiveWallNG ActiveWallG ActiveWallNG
+Player PlayerG
+Slide
+WallFaceL WallFaceR
+WallGrab WallNoGrab
+Temp
+TryFlipPlayer
+
+======
+RULES
+======
+(Conditional walls - facing direction)
+[ActiveWallFL no WallFaceL] -> [ActiveWallFL WallFaceL]
+[ActiveWallFR no WallFaceR] -> [ActiveWallFR WallFaceR]
+
+[WallFaceL no ActiveWallFL][PlayerFaceL] -> [WallFaceL ActiveWallFL no InactiveWallFL][PlayerFaceL]
+[WallFaceL no InactiveWallFL][PlayerFaceR] -> [WallFaceL no ActiveWallFL InactiveWallFL][PlayerFaceR]
+[WallFaceR no ActiveWallFR][PlayerFaceR] -> [WallFaceR ActiveWallFR no InactiveWallFR][PlayerFaceR]
+[WallFaceR no InactiveWallFR][PlayerFaceL] -> [WallFaceR no ActiveWallFR InactiveWallFR][PlayerFaceL]
+
+(bumper - iteration 1)
+[> CanMove|Bumper] -> [< CanMove|Bumper] sfx4
+
+(Flip player)
+left [ > PR ] -> [ > PL TryFlipPlayer ]
+right [ > PL ] -> [ > PR TryFlipPlayer ]
+
+(toggle grab)
+right [action PR|Grabbable] -> [PRG|Grabbable] sfx0
+left [action PL|Grabbable] -> [PLG|Grabbable] sfx0
+right [action PRG|Grabbable] -> [PR|Grabbable] sfx1
+left [action PLG|Grabbable] -> [PL|Grabbable] sfx1
+
+(Conditional walls - grab/no grab)
+[ActiveWallG no WallGrab] -> [ActiveWallG WallGrab]
+[ActiveWallNG no WallNoGrab] -> [ActiveWallNG WallNoGrab]
+
+[WallGrab no ActiveWallG][PlayerG] -> [WallGrab ActiveWallG no InactiveWallG][PlayerG]
+[WallGrab no InactiveWallG][PlayerNoG] -> [WallGrab no ActiveWallG InactiveWallG][PlayerNoG]
+[WallNoGrab no ActiveWallNG][PlayerNoG] -> [WallNoGrab ActiveWallNG no InactiveWallNG][PlayerNoG]
+[WallNoGrab no InactiveWallNG][PlayerG] -> [WallNoGrab no ActiveWallNG InactiveWallNG][PlayerG]
+
+(stop movements)
+vertical [> PlayerG no Slide|SolidToPlayers] -> [Temp PlayerG|SolidToPlayers]
+
+(multipush - iteration 1)
+left [moving PLG|Draggable] -> [moving PLG|moving Draggable]
+right[moving PRG|Draggable] -> [moving PRG|moving Draggable]
+[> Pusher|Multipushable no BlockPushesFromPushers] -> [> Pusher|> Multipushable no BlockPushesFromPushers]
+
+(ice)
+  (add Slide objs)
+up [> CanSlide no SlideU|Ice] -> [> CanSlide SlideU|Ice]
+right [> CanSlide no SlideR|Ice] -> [> CanSlide SlideR|Ice]
+down [> CanSlide no SlideD|Ice] -> [> CanSlide SlideD|Ice]
+left [> CanSlide no SlideL|Ice] -> [> CanSlide SlideL|Ice]
+
+  (propagate Slide obj between grabbed obj and grabbing player)
+left [PLG Slide|Crate no Slide] -> [PLG Slide|Crate Slide]
+right [PRG Slide|Crate no Slide] -> [PRG Slide|Crate Slide]
+left [PLG no Slide|Crate Slide] -> [PLG Slide|Crate Slide]
+right [PRG no Slide|Crate Slide] -> [PRG Slide|Crate Slide]
+
+  (repeatedly slide if Slide object is present)
+[CanSlide SlideU] -> [up CanSlide up SlideU] again
+[CanSlide SlideR] -> [right CanSlide right SlideR] again
+[CanSlide SlideD] -> [down CanSlide down SlideD] again
+[CanSlide SlideL] -> [left CanSlide left SlideL] again
+[> Slide|no Ice] -> [Slide|no Ice]
+
+(multipush - iteration 2)
+left [moving PLG|Draggable] -> [moving PLG|moving Draggable]
+right[moving PRG|Draggable] -> [moving PRG|moving Draggable]
+[> Pusher|Multipushable no BlockPushesFromPushers] -> [> Pusher|> Multipushable no BlockPushesFromPushers]
+
+(bumper - iteration 2)
+up [> CanMove SlideU|Bumper] -> [< CanMove < SlideD|Bumper] sfx4
+right [> CanMove SlideR|Bumper] -> [< CanMove < SlideL|Bumper] sfx4
+down [> CanMove SlideD|Bumper] -> [< CanMove < SlideU|Bumper] sfx4
+left [> CanMove SlideL|Bumper] -> [< CanMove < SlideR|Bumper] sfx4
+
+(make grabbed objs move player (if crates) or keep them stationary (if walls))
+right [ moving Grabbable|PLG ] -> [ moving Grabbable|moving PLG ]
+left [ moving Grabbable|PRG ] -> [ moving Grabbable|moving PRG ]
+(right [ stationary Wall|moving PLG ] -> [ stationary Wall|stationary PLG no Slide ] sfx7
+left [ stationary Wall|moving PRG ] -> [ stationary Wall|stationary PRG no Slide ] sfx7)
+right [ stationary Grabbable|PLG ] -> [ stationary Grabbable|stationary PLG no Slide ]
+left [ stationary Grabbable|PRG ] -> [ stationary Grabbable|stationary PRG no Slide ]
+
+(stop movements)
+[> Multipushable|stationary SolidToMultipushables] -> [Multipushable no Slide|stationary SolidToMultipushables]
+[> PlayerNoG|stationary SolidToPlayers] -> [PlayerNoG no Slide|stationary SolidToPlayers]
+
+vertical [> PlayerG no Slide|SolidToPlayers] -> [Temp PlayerG|SolidToPlayers]
+
+right [> CanMove|Wall][PRG] -> [Temp CanMove no Slide|Wall][PRG]
+left [> CanMove|Wall][PLG] -> [Temp CanMove no Slide|Wall][PLG]
+[> CanMove|Wall] -> [CanMove no Slide|Wall]
+
+[> PlayerG|stationary SolidToPlayers] -> [PlayerG no Slide|stationary SolidToPlayers]
+(vertical [> PlayerG|Solid] -> [PlayerG no Slide|Solid]
+right [> PLG|Solid] -> [Temp PLG no Slide|Solid]
+left [> PRG|Solid] -> [Temp PRG no Slide|Solid])
+[> SolidToPlayers|stationary Player] -> [Temp SolidToPlayers no Slide|stationary Player]
+
+[stationary Player no Slide] -> [Temp stationary Player no Slide]
+
+up [SlideU|stationary SolidToPlayers] -> [no SlideU|SolidToPlayers]
+right [SlideR|stationary SolidToPlayers] -> [no SlideR|SolidToPlayers]
+down [SlideD|stationary SolidToPlayers] -> [no SlideD|SolidToPlayers]
+left [SlideL|stationary SolidToPlayers] -> [no SlideL|SolidToPlayers]
+
+  (if sliding player has been stopped, stop the thing they're grabbing from sliding)
+left [PLG no Slide|Grabbable] -> [PLG no Slide|Grabbable no Slide]
+right [PRG no Slide|Grabbable] -> [PRG no Slide|Grabbable no Slide]
+
+  (late rules)
+late [Temp][TryFlipPlayer][PL] -> [Temp][no TryFlipPlayer][PR]
+late [Temp][TryFlipPlayer][PR] -> [Temp][no TryFlipPlayer][PL]
+late [ActiveWallFL][no PlayerFaceL] -> [InactiveWallFL][no PlayerFaceL]
+late [InactiveWallFL][PlayerFaceL] -> [ActiveWallFL][PlayerFaceL]
+late [ActiveWallFR][no PlayerFaceR] -> [InactiveWallFR][no PlayerFaceR]
+late [InactiveWallFR][PlayerFaceR] -> [ActiveWallFR][PlayerFaceR]
+late [TryFlipPlayer] -> [no TryFlipPlayer] sfx5 (flip was successful)
+[Temp][> Player no Slide] -> [Temp][Player]
+left [Temp][PLG|moving Grabbable no Slide] -> [Temp][PLG|Grabbable]
+right [Temp][PRG|moving Grabbable no Slide] -> [Temp][PRG|Grabbable]
+late [Temp] -> [no Temp]
+
+late [Slide no CanSlide] -> [no Slide]
+late [Slide no Ice] -> [no Slide]
+
+(Visual + SFX)
+late down [CastsShadow1|no Shadow1 no Ice] -> [CastsShadow1|Shadow1Main]
+late up [Shadow1|no CastsShadow1] -> [no Shadow1|no CastsShadow1]
+late [Shadow1 Target] -> [Shadow1OnTarget Target]
+late [Shadow1 WallPlayer] -> [Shadow1OnWallPlayer WallPlayer]
+
+late [Shadow1 Ice] -> [no Shadow1 Ice]
+late [Crate Target no CrateOnTarget] -> [Crate Target CrateOnTarget] sfx2
+late [CrateOnTarget no Crate] -> [no CrateOnTarget]
+late [CrateOnTarget no Target] -> [no CrateOnTarget]
+
+late up [WV no WCapU|WH] -> [WV WCapU|WH]
+late down [WV no WCapD|WH] -> [WV WCapD|WH]
+late right [WH no WCapR|WV] -> [WH WCapR|WV]
+late left [WH no WCapL|WV] -> [WH WCapL|WV]
+late up [WV no WCapU|no Wall] -> [WV WCapU|no Wall]
+late down [WV no WCapD|no Wall] -> [WV WCapD|no Wall]
+late right [WH no WCapR|no Wall] -> [WH WCapR|no Wall]
+late left [WH no WCapL|no Wall] -> [WH WCapL|no Wall]
+
+[moving Player no Slide] -> [moving Player no Slide] sfx6
+
+late [Slide] -> [Slide] sfx3
+
+==============
+WINCONDITIONS
+==============
+all Target on Crate
+
+=======
+LEVELS
+=======
+message Press X to toggle grab.
+message Cover all targets with crates to win!
+
+00000000w__________w0000
+0000w___/t!!!!!!!.t/0000
+0000/.../......wwc./0000
+0000/.wd..+._!+//t_____w
+0000/.__w.c/...//__..t./
+0000/....w_/.c.//___../w
+0000/....../nc.//w+cc./0
+w_____.....w.!.w..._kw/0
+/..pcw......whw!!!!!!/00
+/..oc+.w.....h.....w+/00
+/...__.......h...../j/00
+w_j__........j...../!w/0
+0/!w........wtw..../!.w/
+0/!.........w/___w.w!!t/
+0/!w........./t.c/....//
+0w/..........__r.c...c/0
+00/._!_....w_____w..w_w0
+00/.x.x/!!!!!!!!!!../000
+00w_++t/___w.w______w000
+0000___w000/.ct/00000000
+00000000000w___w00000000
