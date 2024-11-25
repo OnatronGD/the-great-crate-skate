@@ -523,7 +523,7 @@ all Target on Crate
 LEVELS
 =======
 message Press X to toggle grab.
-message Cover all targets with crates to win!z
+message Cover all targets with crates to win!
 
 00000000w__________w0000
 0000w___/t!!!!!h!.t/0000
