@@ -217,6 +217,13 @@ CrateOnTarget
 11001
 11101
 11111
+CrateOnIce
+#dbc1af
+.....
+.....
+.....
+0....
+..00.
 
 (Rock
 #9b6970 #a7a79e
@@ -293,7 +300,7 @@ H = N and Ice
 B = Bumper
 
 9 = WallCrate and Ice
-8 = Crate and Ice
+8 = Crate and Ice and CrateOnIce
 7 = WallPlayer and Ice
 6 = N and WallCrate
 5 = Ice and Target
@@ -358,6 +365,7 @@ Target
 Shadow1
 Wall Crate WallCrate Border Bumper
 CrateOnTarget WCapU WCapR
+CrateOnIce
 InactiveWallFL InactiveWallFR ActiveWallFL ActiveWallFR WCapD WCapL
 InactiveWallG InactiveWallNG ActiveWallG ActiveWallNG
 Player PlayerG
@@ -510,6 +518,9 @@ late up [WV no WCapU|no Wall] -> [WV WCapU|no Wall]
 late down [WV no WCapD|no Wall] -> [WV WCapD|no Wall]
 late right [WH no WCapR|no Wall] -> [WH WCapR|no Wall]
 late left [WH no WCapL|no Wall] -> [WH WCapL|no Wall]
+
+late [Crate Ice] -> [Crate Ice CrateOnIce]
+late [CrateOnIce no Crate] -> [no CrateOnIce]
 
 [moving Player no Slide] -> [moving Player no Slide] sfx6
 
