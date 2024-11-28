@@ -466,18 +466,13 @@ right [> CanMove|Wall][PRG] -> [Temp CanMove no Slide|Wall][PRG]
 left [> CanMove|Wall][PLG] -> [Temp CanMove no Slide|Wall][PLG]
 [> CanMove|Wall] -> [CanMove no Slide|Wall]
 
-[> PlayerG|stationary SolidToPlayers] -> [PlayerG no Slide|stationary SolidToPlayers]
+[> Player|stationary SolidToPlayers] -> [Player no Slide|stationary SolidToPlayers]
 (vertical [> PlayerG|Solid] -> [PlayerG no Slide|Solid]
 right [> PLG|Solid] -> [Temp PLG no Slide|Solid]
 left [> PRG|Solid] -> [Temp PRG no Slide|Solid])
 [> SolidToPlayers|stationary Player] -> [Temp SolidToPlayers no Slide|stationary Player]
 
 [stationary Player no Slide] -> [Temp stationary Player no Slide]
-
-up [SlideU|stationary SolidToPlayers] -> [no SlideU|SolidToPlayers]
-right [SlideR|stationary SolidToPlayers] -> [no SlideR|SolidToPlayers]
-down [SlideD|stationary SolidToPlayers] -> [no SlideD|SolidToPlayers]
-left [SlideL|stationary SolidToPlayers] -> [no SlideL|SolidToPlayers]
 
   (if sliding player has been stopped, stop the thing they're grabbing from sliding)
 left [PLG no Slide|Grabbable] -> [PLG no Slide|Grabbable no Slide]
