@@ -525,6 +525,7 @@ late [Slide] -> [Slide] sfx3
 WINCONDITIONS
 ==============
 all Target on Crate
+no Slide
 
 =======
 LEVELS
