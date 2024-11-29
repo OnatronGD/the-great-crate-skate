@@ -6,7 +6,8 @@ homepage onatron.itch.io
 background_color #25272a
 
 again_interval 0.03
-key_repeat_interval 0.12
+key_repeat_interval 0.04
+key_repeat_interval_start 0.15 (Only works with my fork of PuzzleScript (https://github.com/OnatronGD/PuzzleScript).)
 
 run_rules_on_level_start
 norepeat_action
@@ -204,8 +205,8 @@ WallPlayer
 00110
 
 Crate
-#9b6970 #c9814b #dda963
-22222
+#9b6970 #c9814b #dda963 #dbc1af
+22233
 10002
 11002
 11102
@@ -344,6 +345,10 @@ sfx4 3243506 (bumper)
 
 sfx5 4951307 (flip)
 sfx6 99227107 (move)
+
+(undo 28278707)
+undo 82130107
+restart 4256704
 (sfx7 52500904 (wallgrab prevents move))
 
 (sfx6 30232507 (move crate))
@@ -556,3 +561,5 @@ w__j___.......j...../!w/0
 000000000000/.ct...n./000
 000000000000w______wt/000
 00000000000000000000_w000
+
+message You won!
