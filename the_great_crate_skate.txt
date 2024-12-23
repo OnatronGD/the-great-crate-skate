@@ -5,9 +5,9 @@ author Onatron
 homepage onatron.itch.io
 background_color #25272a
 
-again_interval 0.03
-key_repeat_interval 0.04
-key_repeat_interval_start 0.15 (Only works with my fork of PuzzleScript (https://github.com/OnatronGD/PuzzleScript).)
+again_interval 0.053
+key_repeat_interval 0.073
+key_repeat_interval_start 0.275 (Only works with my fork of PuzzleScript (https://github.com/OnatronGD/PuzzleScript).)
 
 run_rules_on_level_start
 norepeat_action
