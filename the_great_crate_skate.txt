@@ -417,17 +417,19 @@ left [action PLG|Grabbable] -> [PL|Grabbable] sfx1
 (stop movements)
 vertical [> PlayerG no Slide|SolidToPlayers] -> [Temp PlayerG|SolidToPlayers]
 
-(multipush - iteration 1)
+(make player drag draggable objs)
 left [moving PLG|Draggable] -> [moving PLG|moving Draggable]
 right[moving PRG|Draggable] -> [moving PRG|moving Draggable]
+
+(multipush - iteration 1)
 [> Pusher|Multipushable no BlockPushesFromPushers] -> [> Pusher|> Multipushable no BlockPushesFromPushers]
 
 (ice)
   (add Slide objs)
-up [> CanSlide no SlideU|Ice] -> [> CanSlide SlideU|Ice]
-right [> CanSlide no SlideR|Ice] -> [> CanSlide SlideR|Ice]
-down [> CanSlide no SlideD|Ice] -> [> CanSlide SlideD|Ice]
-left [> CanSlide no SlideL|Ice] -> [> CanSlide SlideL|Ice]
+up [> CanSlide|Ice] -> [> CanSlide SlideU|Ice]
+right [> CanSlide|Ice] -> [> CanSlide SlideR|Ice]
+down [> CanSlide|Ice] -> [> CanSlide SlideD|Ice]
+left [> CanSlide|Ice] -> [> CanSlide SlideL|Ice]
 
   (propagate Slide obj between grabbed obj and grabbing player)
 left [PLG Slide|Crate no Slide] -> [PLG Slide|Crate Slide]
@@ -436,15 +438,12 @@ left [PLG no Slide|Crate Slide] -> [PLG Slide|Crate Slide]
 right [PRG no Slide|Crate Slide] -> [PRG Slide|Crate Slide]
 
   (repeatedly slide if Slide object is present)
-[CanSlide SlideU] -> [up CanSlide up SlideU] again
-[CanSlide SlideR] -> [right CanSlide right SlideR] again
-[CanSlide SlideD] -> [down CanSlide down SlideD] again
-[CanSlide SlideL] -> [left CanSlide left SlideL] again
-[> Slide|no Ice] -> [Slide|no Ice]
+[CanSlide SlideU] -> [up CanSlide up SlideU]
+[CanSlide SlideR] -> [right CanSlide right SlideR]
+[CanSlide SlideD] -> [down CanSlide down SlideD]
+[CanSlide SlideL] -> [left CanSlide left SlideL]
 
 (multipush - iteration 2)
-left [moving PLG|Draggable] -> [moving PLG|moving Draggable]
-right[moving PRG|Draggable] -> [moving PRG|moving Draggable]
 [> Pusher|Multipushable no BlockPushesFromPushers] -> [> Pusher|> Multipushable no BlockPushesFromPushers]
 
 (bumper - iteration 2)
@@ -498,6 +497,8 @@ late [Temp] -> [no Temp]
 
 late [Slide no CanSlide] -> [no Slide]
 late [Slide no Ice] -> [no Slide]
+
+late [Slide] -> [Slide] again
 
 (Visual + SFX)
 late down [CastsShadow1|no Shadow1 no Ice] -> [CastsShadow1|Shadow1Main]
