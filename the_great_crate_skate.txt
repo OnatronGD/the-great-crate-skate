@@ -540,6 +540,7 @@ late left [WH no WCapL|no Wall] -> [WH WCapL|no Wall]
 late [Crate Ice] -> [Crate Ice CrateOnIce]
 late [CrateOnIce no Crate] -> [no CrateOnIce]
 
+[action Player] -> [stationary Player] (to prevent a bug where sfx6 plays when you fail a grab on the first turn. I suspect this is a PuzzleScript bug, and should probably investigate further (and file a bug report if I'm right about that))
 [moving Player no Ice] -> [moving Player no Ice] sfx6
 
 ==============
