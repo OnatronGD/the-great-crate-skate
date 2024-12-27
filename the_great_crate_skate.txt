@@ -1,5 +1,3 @@
-(TODO: allow for chained slide -> multipush -> slide... events.)
-
 title The Great Crate Skate
 author Onatron
 homepage onatron.itch.io
@@ -249,13 +247,21 @@ Ice
 0..00
 00..0
 00000
-SlideU
+MoveU
 transparent
-SlideR
+MoveR
 transparent
-SlideD
+MoveD
 transparent
-SlideL
+MoveL
+transparent
+MoveUPrev
+transparent
+MoveRPrev
+transparent
+MoveDPrev
+transparent
+MoveLPrev
 transparent
 
 Bumper
@@ -266,9 +272,14 @@ Bumper
 02230
 .000.
 
-Temp
+PrevPlayerPlace
+transparent
+PrevCratePlace
 transparent
 TryFlipPlayer
+transparent
+
+CancelNonGrabToggleMovements
 transparent
 
 =======
@@ -311,7 +322,8 @@ PlayerNoG = PL or PR
 Player = PlayerNoG or PlayerG
 PlayerFaceL = PL or PLG
 PlayerFaceR = PR or PRG
-Slide = SlideU or SlideR or SlideD or SlideL
+MovingObj = MoveU or MoveR or MoveD or MoveL
+MovingObjPrev = MoveUPrev or MoveRPrev or MoveDPrev or MoveLPrev
 
 Wall = W or WV or WH
 Shadow1 = Shadow1Main or Shadow1OnTarget or Shadow1OnWallPlayer
@@ -321,7 +333,7 @@ CanMove = Player or Crate
 CastsShadow1 = Wall or Crate
 CanSlide = Crate or Player
 
-Solid = Crate or Wall or ActiveWallFL or ActiveWallFR or ActiveWallG or ActiveWallNG or Border or Bumper
+Solid = Crate or Wall or ActiveWallFL or ActiveWallFR or ActiveWallG or ActiveWallNG or Border or Bumper or Player
 SolidToMultipushables = Solid or WallCrate
 SolidToPlayers = Solid or WallPlayer
 
@@ -374,15 +386,21 @@ CrateOnIce
 InactiveWallFL InactiveWallFR ActiveWallFL ActiveWallFR WCapD WCapL
 InactiveWallG InactiveWallNG ActiveWallG ActiveWallNG
 Player PlayerG
-Slide
+MovingObj
+MoveUPrev MoveRPrev MoveDPrev MoveLPrev
 WallFaceL WallFaceR
 WallGrab WallNoGrab
-Temp
+PrevPlayerPlace
+PrevCratePlace
 TryFlipPlayer
+CancelNonGrabToggleMovements
 
 ======
 RULES
 ======
+[Player] -> [Player PrevPlayerPlace]
+[Crate] -> [Crate PrevCratePlace]
+
 (Conditional walls - facing direction)
 [ActiveWallFL no WallFaceL] -> [ActiveWallFL WallFaceL]
 [ActiveWallFR no WallFaceR] -> [ActiveWallFR WallFaceR]
@@ -392,14 +410,12 @@ RULES
 [WallFaceR no ActiveWallFR][PlayerFaceR] -> [WallFaceR ActiveWallFR no InactiveWallFR][PlayerFaceR]
 [WallFaceR no InactiveWallFR][PlayerFaceL] -> [WallFaceR no ActiveWallFR InactiveWallFR][PlayerFaceL]
 
-(bumper - iteration 1)
-[> CanMove|Bumper] -> [< CanMove|Bumper] sfx4
-
 (Flip player)
 left [ > PR ] -> [ > PL TryFlipPlayer ]
 right [ > PL ] -> [ > PR TryFlipPlayer ]
 
 (toggle grab)
+  (don't need to remove PrevPlayerPlace because grab toggling won't be reset by a Player and PrevPlayerPlace being on the same tile, and none of the things that are reset are relevant for turns spent toggling grab)
 right [action PR|Grabbable] -> [PRG|Grabbable] sfx0
 left [action PL|Grabbable] -> [PLG|Grabbable] sfx0
 right [action PRG|Grabbable] -> [PR|Grabbable] sfx1
@@ -414,91 +430,92 @@ left [action PLG|Grabbable] -> [PL|Grabbable] sfx1
 [WallNoGrab no ActiveWallNG][PlayerNoG] -> [WallNoGrab ActiveWallNG no InactiveWallNG][PlayerNoG]
 [WallNoGrab no InactiveWallNG][PlayerG] -> [WallNoGrab no ActiveWallNG InactiveWallNG][PlayerG]
 
-(stop movements)
-vertical [> PlayerG no Slide|SolidToPlayers] -> [Temp PlayerG|SolidToPlayers]
+(initial setup of Move objs)
+[MoveU no Ice] -> [MoveUPrev no Ice]
+[MoveR no Ice] -> [MoveRPrev no Ice]
+[MoveD no Ice] -> [MoveDPrev no Ice]
+[MoveL no Ice] -> [MoveLPrev no Ice]
 
-(make player drag draggable objs)
-left [moving PLG|Draggable] -> [moving PLG|moving Draggable]
-right[moving PRG|Draggable] -> [moving PRG|moving Draggable]
+up [> CanMove] -> [> CanMove > MoveU]
+right [> CanMove] -> [> CanMove > MoveR]
+down [> CanMove] -> [> CanMove > MoveD]
+left [> CanMove] -> [> CanMove > MoveL]
 
-(multipush - iteration 1)
-[> Pusher|Multipushable no BlockPushesFromPushers] -> [> Pusher|> Multipushable no BlockPushesFromPushers]
+(if Move obj is present on ice, move again (a.k.a. slide))
+[CanSlide MoveU Ice] -> [up CanSlide up MoveU Ice]
+[CanSlide MoveR Ice] -> [right CanSlide right MoveR Ice]
+[CanSlide MoveD Ice] -> [down CanSlide down MoveD Ice]
+[CanSlide MoveL Ice] -> [left CanSlide left MoveL Ice]
 
-(ice)
-  (add Slide objs)
-up [> CanSlide|Ice] -> [> CanSlide SlideU|Ice]
-right [> CanSlide|Ice] -> [> CanSlide SlideR|Ice]
-down [> CanSlide|Ice] -> [> CanSlide SlideD|Ice]
-left [> CanSlide|Ice] -> [> CanSlide SlideL|Ice]
+(propagate Move obj between grabbed obj and grabbing player)
+left [moving PLG MovingObj|Draggable no MovingObj] -> [moving PLG MovingObj|moving Draggable moving MovingObj]
+right [moving PRG MovingObj|Draggable no MovingObj] -> [moving PRG MovingObj|moving Draggable moving MovingObj]
+left [PLG no MovingObj|moving Draggable MovingObj] -> [moving PLG moving MovingObj|moving Draggable MovingObj]
+right [PRG no MovingObj|moving Draggable MovingObj] -> [moving PRG moving MovingObj|moving Draggable MovingObj]
 
-  (propagate Slide obj between grabbed obj and grabbing player)
-left [PLG Slide|Crate no Slide] -> [PLG Slide|Crate Slide]
-right [PRG Slide|Crate no Slide] -> [PRG Slide|Crate Slide]
-left [PLG no Slide|Crate Slide] -> [PLG Slide|Crate Slide]
-right [PRG no Slide|Crate Slide] -> [PRG Slide|Crate Slide]
+(stop vertically-moving PlayerGs and any obj they're holding - lets me avoid a vertically-moving player multipushing objs despite being stopped by a wall. I don't like this solution, but it should work.)
+vertical [> PlayerG|stationary SolidToPlayers] -> [PlayerG no MovingObj|stationary SolidToPlayers]
+  (propagate to held obj)
+right [stationary PRG|Grabbable] -> [stationary PRG|stationary Grabbable]
+left [stationary PLG|Grabbable] -> [stationary PLG|stationary Grabbable]
 
-  (repeatedly slide if Slide object is present)
-[CanSlide SlideU] -> [up CanSlide up SlideU]
-[CanSlide SlideR] -> [right CanSlide right SlideR]
-[CanSlide SlideD] -> [down CanSlide down SlideD]
-[CanSlide SlideL] -> [left CanSlide left SlideL]
+(multipush)
+[> Pusher > MovingObj|Multipushable no BlockPushesFromPushers] -> [> Pusher > MovingObj|> Multipushable > MovingObj no BlockPushesFromPushers]
 
-(multipush - iteration 2)
-[> Pusher|Multipushable no BlockPushesFromPushers] -> [> Pusher|> Multipushable no BlockPushesFromPushers]
+(bumper)
+up [> CanMove > MoveU|Bumper] -> [< CanMove < MoveD|Bumper] sfx4
+right [> CanMove > MoveR|Bumper] -> [< CanMove < MoveL|Bumper] sfx4
+down [> CanMove > MoveD|Bumper] -> [< CanMove < MoveU|Bumper] sfx4
+left [> CanMove > MoveL|Bumper] -> [< CanMove < MoveR|Bumper] sfx4
 
-(bumper - iteration 2)
-up [> CanMove SlideU|Bumper] -> [< CanMove < SlideD|Bumper] sfx4
-right [> CanMove SlideR|Bumper] -> [< CanMove < SlideL|Bumper] sfx4
-down [> CanMove SlideD|Bumper] -> [< CanMove < SlideU|Bumper] sfx4
-left [> CanMove SlideL|Bumper] -> [< CanMove < SlideR|Bumper] sfx4
-
-(make grabbed objs move player (if crates) or keep them stationary (if walls))
-right [ moving Grabbable|PLG ] -> [ moving Grabbable|moving PLG ]
-left [ moving Grabbable|PRG ] -> [ moving Grabbable|moving PRG ]
-(right [ stationary Wall|moving PLG ] -> [ stationary Wall|stationary PLG no Slide ] sfx7
-left [ stationary Wall|moving PRG ] -> [ stationary Wall|stationary PRG no Slide ] sfx7)
-right [ stationary Grabbable|PLG ] -> [ stationary Grabbable|stationary PLG no Slide ]
-left [ stationary Grabbable|PRG ] -> [ stationary Grabbable|stationary PRG no Slide ]
+(make grabbed walls stop player movement)
+right [stationary Grabbable|PLG] -> [stationary Grabbable|stationary PLG no MovingObj]
+left [stationary Grabbable|PRG] -> [stationary Grabbable|stationary PRG no MovingObj]
 
 (stop movements)
-[> Multipushable|stationary SolidToMultipushables] -> [Multipushable no Slide|stationary SolidToMultipushables]
-[> PlayerNoG|stationary SolidToPlayers] -> [PlayerNoG no Slide|stationary SolidToPlayers]
+[> Multipushable|stationary SolidToMultipushables] -> [Multipushable no MovingObj|stationary SolidToMultipushables]
+[> Player|stationary SolidToPlayers] -> [Player no MovingObj|stationary SolidToPlayers]
+  (required because players aren't properly made stationary until after multipushables have checked for stationary blockages in their way)
+[> Multipushable|stationary Player] -> [Multipushable no MovingObj|stationary Player]
 
-vertical [> PlayerG no Slide|SolidToPlayers] -> [Temp PlayerG|SolidToPlayers]
-
-right [> CanMove|Wall][PRG] -> [Temp CanMove no Slide|Wall][PRG]
-left [> CanMove|Wall][PLG] -> [Temp CanMove no Slide|Wall][PLG]
-[> CanMove|Wall] -> [CanMove no Slide|Wall]
-
-[> Player|stationary SolidToPlayers] -> [Player no Slide|stationary SolidToPlayers]
-(vertical [> PlayerG|Solid] -> [PlayerG no Slide|Solid]
-right [> PLG|Solid] -> [Temp PLG no Slide|Solid]
-left [> PRG|Solid] -> [Temp PRG no Slide|Solid])
-[> SolidToPlayers|stationary Player] -> [Temp SolidToPlayers no Slide|stationary Player]
-
-[stationary Player no Slide] -> [Temp stationary Player no Slide]
+(cancel turn)
+  (should the turn be cancelled? default to yes, but switch to no if any players or crates have successfully moved.)
+late [Player] -> [Player CancelNonGrabToggleMovements]
+late [PrevPlayerPlace no Player][CancelNonGrabToggleMovements] -> [PrevPlayerPlace no Player][no CancelNonGrabToggleMovements]
+late [PrevCratePlace no Crate][CancelNonGrabToggleMovements] -> [PrevCratePlace no Crate][no CancelNonGrabToggleMovements]
 
   (if sliding player has been stopped, stop the thing they're grabbing from sliding)
-left [PLG no Slide|Grabbable] -> [PLG no Slide|Grabbable no Slide]
-right [PRG no Slide|Grabbable] -> [PRG no Slide|Grabbable no Slide]
+left [stationary PLG|Grabbable] -> [stationary PLG|stationary Grabbable no MovingObj]
+right [stationary PRG|Grabbable] -> [stationary PRG|stationary Grabbable no MovingObj]
 
-  (late rules)
-late [Temp][TryFlipPlayer][PL] -> [Temp][no TryFlipPlayer][PR]
-late [Temp][TryFlipPlayer][PR] -> [Temp][no TryFlipPlayer][PL]
+  (undo changes to Move obj placements)
+late [CancelNonGrabToggleMovements][MovingObj] -> [CancelNonGrabToggleMovements][no MovingObj]
+late [CancelNonGrabToggleMovements][MoveUPrev] -> [CancelNonGrabToggleMovements][MoveU]
+late [CancelNonGrabToggleMovements][MoveRPrev] -> [CancelNonGrabToggleMovements][MoveR]
+late [CancelNonGrabToggleMovements][MoveDPrev] -> [CancelNonGrabToggleMovements][MoveD]
+late [CancelNonGrabToggleMovements][MoveLPrev] -> [CancelNonGrabToggleMovements][MoveL]
+    (clear MovePrev objs)
+late [MovingObjPrev] -> [no MovingObjPrev]
+
+  (undo crate movements)
+late [CancelNonGrabToggleMovements][Crate] -> [CancelNonGrabToggleMovements][no Crate]
+late [CancelNonGrabToggleMovements][PrevCratePlace] -> [CancelNonGrabToggleMovements][Crate]
+
+  (prevent flip)
+late [CancelNonGrabToggleMovements][TryFlipPlayer][PL] -> [CancelNonGrabToggleMovements][no TryFlipPlayer][PR]
+late [CancelNonGrabToggleMovements][TryFlipPlayer][PR] -> [CancelNonGrabToggleMovements][no TryFlipPlayer][PL]
+
 late [ActiveWallFL][no PlayerFaceL] -> [InactiveWallFL][no PlayerFaceL]
 late [InactiveWallFL][PlayerFaceL] -> [ActiveWallFL][PlayerFaceL]
 late [ActiveWallFR][no PlayerFaceR] -> [InactiveWallFR][no PlayerFaceR]
 late [InactiveWallFR][PlayerFaceR] -> [ActiveWallFR][PlayerFaceR]
+
+(remove leftover objs)
 late [TryFlipPlayer] -> [no TryFlipPlayer] sfx5 (flip was successful)
-[Temp][> Player no Slide] -> [Temp][Player]
-left [Temp][PLG|moving Grabbable no Slide] -> [Temp][PLG|Grabbable]
-right [Temp][PRG|moving Grabbable no Slide] -> [Temp][PRG|Grabbable]
-late [Temp] -> [no Temp]
-
-late [Slide no CanSlide] -> [no Slide]
-late [Slide no Ice] -> [no Slide]
-
-late [Slide] -> [Slide] again
+late [MovingObj Ice] -> [MovingObj Ice] again sfx3
+late [PrevPlayerPlace] -> [no PrevPlayerPlace]
+late [PrevCratePlace] -> [no PrevCratePlace]
+late [CancelNonGrabToggleMovements] -> [no CancelNonGrabToggleMovements]
 
 (Visual + SFX)
 late down [CastsShadow1|no Shadow1 no Ice] -> [CastsShadow1|Shadow1Main]
@@ -523,15 +540,13 @@ late left [WH no WCapL|no Wall] -> [WH WCapL|no Wall]
 late [Crate Ice] -> [Crate Ice CrateOnIce]
 late [CrateOnIce no Crate] -> [no CrateOnIce]
 
-[moving Player no Slide] -> [moving Player no Slide] sfx6
-
-late [Slide] -> [Slide] sfx3
+[moving Player no Ice] -> [moving Player no Ice] sfx6
 
 ==============
 WINCONDITIONS
 ==============
 all Target on Crate
-no Slide
+no MovingObj on Ice
 
 =======
 LEVELS
