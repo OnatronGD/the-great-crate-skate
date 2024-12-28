@@ -448,10 +448,10 @@ left [> CanMove] -> [> CanMove > MoveL]
 [CanSlide MoveL Ice] -> [left CanSlide left MoveL Ice]
 
 (propagate Move obj between grabbed obj and grabbing player)
-left [moving PLG MovingObj|Draggable no MovingObj] -> [moving PLG MovingObj|moving Draggable moving MovingObj]
-right [moving PRG MovingObj|Draggable no MovingObj] -> [moving PRG MovingObj|moving Draggable moving MovingObj]
-left [PLG no MovingObj|moving Draggable MovingObj] -> [moving PLG moving MovingObj|moving Draggable MovingObj]
-right [PRG no MovingObj|moving Draggable MovingObj] -> [moving PRG moving MovingObj|moving Draggable MovingObj]
+left [orthogonal PLG MovingObj|Draggable no MovingObj] -> [orthogonal PLG MovingObj|orthogonal Draggable orthogonal MovingObj]
+right [orthogonal PRG MovingObj|Draggable no MovingObj] -> [orthogonal PRG MovingObj|orthogonal Draggable orthogonal MovingObj]
+left [PLG no MovingObj|orthogonal Draggable MovingObj] -> [orthogonal PLG orthogonal MovingObj|orthogonal Draggable MovingObj]
+right [PRG no MovingObj|orthogonal Draggable MovingObj] -> [orthogonal PRG orthogonal MovingObj|orthogonal Draggable MovingObj]
 
 (stop vertically-moving PlayerGs and any obj they're holding - lets me avoid a vertically-moving player multipushing objs despite being stopped by a wall. I don't like this solution, but it should work.)
 vertical [> PlayerG|stationary SolidToPlayers] -> [PlayerG no MovingObj|stationary SolidToPlayers]
@@ -540,8 +540,7 @@ late left [WH no WCapL|no Wall] -> [WH WCapL|no Wall]
 late [Crate Ice] -> [Crate Ice CrateOnIce]
 late [CrateOnIce no Crate] -> [no CrateOnIce]
 
-[action Player] -> [stationary Player] (to prevent a bug where sfx6 plays when you fail a grab on the first turn. I suspect this is a PuzzleScript bug, and should probably investigate further (and file a bug report if I'm right about that))
-[moving Player no Ice] -> [moving Player no Ice] sfx6
+[orthogonal Player no Ice] -> [orthogonal Player no Ice] sfx6
 
 ==============
 WINCONDITIONS
