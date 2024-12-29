@@ -264,6 +264,9 @@ transparent
 MoveLPrev
 transparent
 
+PlayerMoveIsFromDrag
+transparent
+
 Bumper
 #cf6a4f #e0b94a #9b6970 #25272a
 .000.
@@ -394,6 +397,7 @@ PrevPlayerPlace
 PrevCratePlace
 TryFlipPlayer
 CancelNonGrabToggleMovements
+PlayerMoveIsFromDrag
 
 ======
 RULES
@@ -450,8 +454,8 @@ left [> CanMove] -> [> CanMove > MoveL]
 (propagate Move obj between grabbed obj and grabbing player)
 left [orthogonal PLG MovingObj|Draggable no MovingObj] -> [orthogonal PLG MovingObj|orthogonal Draggable orthogonal MovingObj]
 right [orthogonal PRG MovingObj|Draggable no MovingObj] -> [orthogonal PRG MovingObj|orthogonal Draggable orthogonal MovingObj]
-left [PLG no MovingObj|orthogonal Draggable MovingObj] -> [orthogonal PLG orthogonal MovingObj|orthogonal Draggable MovingObj]
-right [PRG no MovingObj|orthogonal Draggable MovingObj] -> [orthogonal PRG orthogonal MovingObj|orthogonal Draggable MovingObj]
+left [PLG no MovingObj|orthogonal Draggable MovingObj] -> [orthogonal PLG orthogonal MovingObj PlayerMoveIsFromDrag|orthogonal Draggable MovingObj]
+right [PRG no MovingObj|orthogonal Draggable MovingObj] -> [orthogonal PRG orthogonal MovingObj PlayerMoveIsFromDrag|orthogonal Draggable MovingObj]
 
 (stop vertically-moving PlayerGs and any obj they're holding - lets me avoid a vertically-moving player multipushing objs despite being stopped by a wall. I don't like this solution, but it should work.)
 vertical [> PlayerG|stationary SolidToPlayers] -> [PlayerG no MovingObj|stationary SolidToPlayers]
@@ -477,6 +481,10 @@ left [stationary Grabbable|PRG] -> [stationary Grabbable|stationary PRG no Movin
 [> Player|stationary SolidToPlayers] -> [Player no MovingObj|stationary SolidToPlayers]
   (required because players aren't properly made stationary until after multipushables have checked for stationary blockages in their way)
 [> Multipushable|stationary Player] -> [Multipushable no MovingObj|stationary Player]
+
+(cancel crate dragging player if the crate has been stopped and the player isn't on ice)
+left [vertical PLG PlayerMoveIsFromDrag no Ice|stationary Grabbable] -> [stationary PLG no Ice|stationary Grabbable]
+right [vertical PRG PlayerMoveIsFromDrag no Ice|stationary Grabbable] -> [stationary PRG no Ice|stationary Grabbable]
 
 (cancel turn)
   (should the turn be cancelled? default to yes, but switch to no if any players or crates have successfully moved.)
@@ -516,6 +524,7 @@ late [MovingObj Ice] -> [MovingObj Ice] again sfx3
 late [PrevPlayerPlace] -> [no PrevPlayerPlace]
 late [PrevCratePlace] -> [no PrevCratePlace]
 late [CancelNonGrabToggleMovements] -> [no CancelNonGrabToggleMovements]
+late [PlayerMoveIsFromDrag] -> [no PlayerMoveIsFromDrag]
 
 (Visual + SFX)
 late down [CastsShadow1|no Shadow1 no Ice] -> [CastsShadow1|Shadow1Main]
